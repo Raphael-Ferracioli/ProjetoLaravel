@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: vempravilabd_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: vempravilabddocker compose up -d
+      MYSQL_USER: vempravilabd
+      MYSQL_PASSWORD: vempravilabd
+      MYSQL_ROOT_PASSWORD: root
+      TZ: America/Sao_Paulo
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/vempravilabd.sql:/docker-entrypoint-initdb.d/01_vempravilabd.sql
+
+volumes:
+  mysql_data:
