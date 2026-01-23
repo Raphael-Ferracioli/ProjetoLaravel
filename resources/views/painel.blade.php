@@ -670,19 +670,33 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    if (field === 'phone') {
-      title.textContent = 'Editar telefone';
-      return `
-        <label class="form-label">Telefone*</label>
-        <input type="text" class="form-control" name="value" value="${value.replace(/"/g,'&quot;')}" required>
-      `;
-    }
+   if (field === 'phone') {
+        title.textContent = 'Editar telefone';
+        return `
+          <label class="form-label">Telefone*</label>
+          <input
+            type="text"
+            class="form-control"
+            name="value"
+            data-mask="phoneBR"
+            value="${value.replace(/"/g,'&quot;')}"
+            required
+          >
+        `;
+      }
 
-    if (field === 'whatsapp') {
+        if (field === 'whatsapp') {
       title.textContent = 'Editar WhatsApp';
       return `
         <label class="form-label">WhatsApp*</label>
-        <input type="text" class="form-control" name="value" value="${value.replace(/"/g,'&quot;')}" required>
+        <input
+          type="text"
+          class="form-control"
+          name="value"
+          data-mask="phoneBR"
+          value="${value.replace(/"/g,'&quot;')}"
+          required
+        >
       `;
     }
 
@@ -727,27 +741,32 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    if (field === 'specialties') {
-      title.textContent = 'Editar especialidades';
-      const ids = (triggerEl.dataset.ids || '').split(',').map(s => s.trim()).filter(Boolean);
+ if (field === 'specialties') {
+  title.textContent = 'Editar especialidades';
+  const ids = (triggerEl.dataset.ids || '').split(',').map(s => s.trim()).filter(Boolean);
 
-      // monta o select e depois vamos marcar selected via JS
-      setTimeout(() => {
-        const select = modalEl.querySelector('select[name="specialties[]"]');
-        if (select) {
-          [...select.options].forEach(opt => {
-            opt.selected = ids.includes(opt.value);
-          });
-        }
-      }, 0);
-
-      return `
-        <label class="form-label">Especialidades* (selecione pelo menos uma)</label>
-        <select class="form-select" name="specialties[]" multiple required style="min-height: 180px;">
-          ${specialtiesOptions}
-        </select>
-      `;
+  // monta o select e depois vamos marcar selected via JS
+  setTimeout(() => {
+    const select = modalEl.querySelector('select[name="specialties[]"]');
+    if (select) {
+      [...select.options].forEach(opt => {
+        opt.selected = ids.includes(opt.value);
+      });
     }
+  }, 0);
+
+  return `
+   
+    <div class=" py-2 px-3 mb-2" role="alert" style="font-size:.9rem;">
+       <label class="form-label">
+      Para selecionar mais de uma especialidade, mantenha <strong>Shift</strong> pressionado ao clicar
+      </label>
+    </div>
+    <select class="form-select" name="specialties[]" multiple required style="min-height: 180px;">
+      ${specialtiesOptions}
+    </select>
+  `;
+}
 
     // fallback
     title.textContent = 'Editar';

@@ -11,6 +11,13 @@ use App\Http\Controllers\UserController;
 |--------------------------------------------------------------------------
 */
 
+// VERIFICAÇÃO DE E-MAIL (PÚBLICO)
+Route::post('/email/verify/send', [AuthController::class, 'sendVerifyCode'])
+  ->name('email.verify.send');
+
+Route::post('/email/verify/confirm', [AuthController::class, 'confirmVerifyCode'])
+  ->name('email.verify.confirm');
+
 // Páginas institucionais
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/sobre-nos', [HomeController::class, 'sobreNos'])->name('sobre-nos');

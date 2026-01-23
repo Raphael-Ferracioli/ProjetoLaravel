@@ -36,9 +36,17 @@
             </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-four w-100 tran3s d-block" id="backToRegisterBtn">
-          Voltar
-        </button>
+<button type="button" class="btn-four w-100 tran3s d-block btn-terms-back" id="backToRegisterBtn">
+  Voltar
+</button>
+
+<style>
+.btn-terms-back{
+  height: 42px; 
+   padding: 0 16px;      
+  line-height: 42px;   
+}
+  </style>
       </div>
 
     </div>
@@ -127,6 +135,8 @@
          
             <div class="col-12">
               <label class="form-label">Especialidades*</label>
+              <br>
+              <small class="text-muted">Dica: segure Ctrl (Windows) / Cmd (Mac) para selecionar várias.</small>
               <select name="specialties[]" class="form-select" multiple required style="min-height: 180px;">
                 @foreach(($specialties ?? []) as $spec)
                   <option value="{{ $spec->id }}">{{ $spec->name }}</option>
@@ -135,9 +145,7 @@
             </div>
 
             <div class="col-12 d-flex gap-2 justify-content-end mt-2">
-              <button type="button" class="btn btn-outline-secondary" id="backToRegisterFlowBtn">
-                Voltar
-              </button>
+          
               <button type="submit" class="ht-btn">
                 Concluir cadastro
               </button>
@@ -153,6 +161,104 @@
   </div>
 </div>
 
+<!-- Modal: Solicitar código de verificação de e-mail -->
+<div class="modal fade" id="verifyEmailRequestModal" tabindex="-1" aria-labelledby="verifyEmailRequestLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="user-data-form modal-content">
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      <div class="form-wrapper m-auto">
+        <div class="text-center mb-20">
+          <h2 id="verifyEmailRequestLabel">Verificar e-mail</h2>
+          <p>Informe seu e-mail para enviarmos um código de verificação.</p>
+        </div>
+
+        <form id="verifyEmailRequestForm">
+          @csrf
+          <div class="row">
+            <div class="col-12">
+              <div class="input-wrapper position-relative mb-25">
+                <label>E-mail*</label>
+                <input type="email" name="email" id="verifyEmailRequestEmail" placeholder="seu_email@gmail.com" required>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <button type="button" class="btn-four w-100 tran3s d-block mt-10" id="sendVerifyCodeBtn">
+                Enviar código
+              </button>
+            </div>
+
+            <div class="col-12 text-center mt-3">
+              <button type="button" class="btn btn-link p-0" id="backToLoginFromVerifyReqBtn">
+                Voltar para o login
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div id="verifyEmailRequestMsg" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar código de verificação -->
+<div class="modal fade" id="verifyEmailCodeModal" tabindex="-1" aria-labelledby="verifyEmailCodeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="user-data-form modal-content">
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      <div class="form-wrapper m-auto">
+        <div class="text-center mb-20">
+          <h2 id="verifyEmailCodeLabel">Confirmar código</h2>
+          <p class="mb-1">Digite o código que enviamos para:</p>
+          <strong id="verifyEmailCodeTo"></strong>
+        </div>
+
+        <form id="verifyEmailCodeForm">
+          @csrf
+          <input type="hidden" id="verifyEmailHiddenEmail" name="email">
+
+          <div class="row">
+            <div class="col-12">
+              <div class="input-wrapper position-relative mb-25">
+                <label>Código*</label>
+                <input
+                  type="text"
+                  name="token"
+                  id="verifyEmailToken"
+                  placeholder="Ex.: 123456"
+                  inputmode="numeric"
+                  maxlength="6"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="col-12">
+              <button type="button" class="btn-four w-100 tran3s d-block mt-10" id="confirmVerifyCodeBtn">
+                Confirmar
+              </button>
+            </div>
+
+            <div class="col-12 d-flex justify-content-between mt-3">
+              <button type="button" class="btn btn-link p-0" id="resendVerifyCodeBtn">
+                Reenviar código
+              </button>
+
+              <button type="button" class="btn btn-link p-0" id="changeVerifyEmailBtn">
+                Alterar e-mail
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div id="verifyEmailCodeMsg" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen modal-dialog-centered">
@@ -205,7 +311,11 @@
                                <button type="button" class="btn btn-link p-0" id="openForgotBtn">
                                   Esqueceu a senha?
                                 </button>
-                                    
+                                    <div class="col-12 text-start mb-2">
+                                <button type="button" class="btn btn-link p-0" id="openVerifyEmailBtn">
+                                  Verificar e-mail / Liberar acesso
+                                </button>
+                                  </div>
                                     </div>
 
                                     <div class="col-12">
@@ -223,6 +333,101 @@
                             </form>
                         </div>
                         
+                          <!-- Modal 1: Solicitar envio do código -->
+<div class="modal fade" id="verifyEmailRequestModal" tabindex="-1" aria-labelledby="verifyEmailRequestLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="user-data-form modal-content">
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      <div class="form-wrapper m-auto">
+        <div class="text-center mb-20">
+          <h2 id="verifyEmailRequestLabel">Verificar e-mail</h2>
+          <p>Informe seu e-mail para enviarmos o código de verificação.</p>
+        </div>
+
+        <form id="verifyEmailRequestForm">
+          @csrf
+          <div class="row">
+            <div class="col-12">
+              <div class="input-wrapper position-relative mb-25">
+                <label>E-mail*</label>
+                <input type="email" name="email" id="verifyEmailRequestEmail" placeholder="seu_email@gmail.com" required>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <button type="button" class="btn-four w-100 tran3s d-block mt-20" id="sendVerifyCodeBtn">
+                Enviar código
+              </button>
+            </div>
+
+            <div class="col-12 text-center mt-3">
+              <button type="button" class="btn btn-link p-0" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">
+                Voltar para o login
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div id="verifyEmailRequestMsg" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Confirmar código -->
+<div class="modal fade" id="verifyEmailCodeModal" tabindex="-1" aria-labelledby="verifyEmailCodeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="user-data-form modal-content">
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      <div class="form-wrapper m-auto">
+        <div class="text-center mb-20">
+          <h2 id="verifyEmailCodeLabel">Confirmar código</h2>
+          <p class="mb-1">Digite o código enviado para:</p>
+          <strong id="verifyEmailCodeTo"></strong>
+        </div>
+
+        <form id="verifyEmailCodeForm">
+          @csrf
+          <input type="hidden" id="verifyEmailHiddenEmail" name="email">
+
+          <div class="row">
+            <div class="col-12">
+              <div class="input-wrapper position-relative mb-25">
+                <label>Código*</label>
+                <input type="text" name="token" id="verifyEmailToken" placeholder="Ex.: 123456"
+                       inputmode="numeric" maxlength="6" required>
+              </div>
+              <small class="text-muted">O código expira em 15 minutos.</small>
+            </div>
+
+            <div class="col-12">
+              <button type="button" class="btn-four w-100 tran3s d-block mt-20" id="confirmVerifyCodeBtn">
+                Confirmar
+              </button>
+            </div>
+
+            <div class="col-12 d-flex justify-content-between mt-3">
+              <button type="button" class="btn btn-link p-0" id="resendVerifyCodeBtn">Reenviar</button>
+              <button type="button" class="btn btn-link p-0" id="changeVerifyEmailBtn">Alterar e-mail</button>
+            </div>
+
+            <div class="col-12 text-center mt-3">
+              <button type="button" class="btn btn-link p-0" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">
+                Voltar para o login
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div id="verifyEmailCodeMsg" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
                         <!-- Register Tab -->
                         <div class="tab-pane" role="tabpanel" id="fc2">
                             <div class="text-center mb-20">
