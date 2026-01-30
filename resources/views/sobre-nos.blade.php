@@ -211,8 +211,8 @@
                         </div>
                         <div class="col-xl-5">
                             <div class="d-md-flex justify-content-xl-end justify-content-center text-center mb-50">
-                                <a href="https://wa.me/+5519982200364?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20o%20time%20VilaSoftware!" class="ht-btn bstyle style-2 me-xl-3">Fale com nosso time</a>
-                                <a href="cadastro.php" class="ht-btn bstyle-2">Quero testar</a>
+                                <a href="https://wa.me/+5519982200364?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20o%20time%20VilaSoftware!" target="_blank" class="ht-btn bstyle style-2 me-xl-3">Fale com nosso time</a>
+                                <a href="/painel"  class="ht-btn bstyle-2">Quero testar</a>
                             </div>
                         </div>
                     </div>

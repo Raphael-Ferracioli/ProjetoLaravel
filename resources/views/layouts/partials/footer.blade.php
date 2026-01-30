@@ -50,8 +50,8 @@
                 </div>
                 <div class="col-md-6 text-xl-end text-center">
                     <ul class="footer-menu">
-                        <li><a href="#">Termos e Condições</a></li>
-                        <li><a href="#">Políticas de Privacidade</a></li>
+                        <li><a href="#" class="open-terms">Termos e Condições</a></li>
+                        <li><a href="#" class="open-terms">Políticas de Privacidade</a></li>
                     </ul>
                 </div>
             </div>

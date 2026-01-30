@@ -78,7 +78,38 @@
     <script src="{{ asset('js/jquery.counterup.min.js') }}"></script>
 
     <script src="{{ asset('js/main.js') }}"></script>
+    @guest
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const hasLoginParam = new URLSearchParams(window.location.search).get('login') === '1';
 
+                // Se você quiser também abrir quando houver erros de validação do login:
+                const hasLoginErrors = {{ $errors->has('email') || $errors->has('password') ? 'true' : 'false' }};
+
+                if (!hasLoginParam && !hasLoginErrors) return;
+
+                const modalEl = document.getElementById('loginModal');
+                if (!modalEl) return;
+
+                // Bootstrap 5 (window.bootstrap)
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                } else {
+                    // fallback: tenta abrir via atributo (caso seu bootstrap seja outra versão)
+                    modalEl.classList.add('show');
+                    modalEl.style.display = 'block';
+                    document.body.classList.add('modal-open');
+                }
+
+                // Opcional: remove o ?login=1 da URL pra não reabrir no refresh
+                if (hasLoginParam) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('login');
+                    window.history.replaceState({}, '', url.toString());
+                }
+            });
+        </script>
+    @endguest
     @stack('scripts')
 </body>
 </html>

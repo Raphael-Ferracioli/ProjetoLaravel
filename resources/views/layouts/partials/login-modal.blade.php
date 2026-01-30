@@ -41,6 +41,42 @@
 </button>
 
 <style>
+    /* garante que a mensagem não seja cortada */
+  #loginModal .input-wrapper { overflow: visible !important; }
+
+  /* mostra o feedback quando o input estiver inválido */
+  #loginModal #passwordConfirmation.is-invalid + #passwordConfirmationFeedback {
+    display: block !important;
+  }
+
+  /* deixa o feedback bonitinho */
+  #loginModal #passwordConfirmationFeedback{
+    margin-top: .35rem;
+    font-size: .875rem;
+    color: #dc3545;
+  }
+    /* força a mensagem do invalid-feedback aparecer no seu tema */
+  .invalid-feedback {
+    display: none;
+    font-size: .875rem;
+    margin-top: .25rem;
+    color: #dc3545;
+  }
+
+  /* mostra quando o input estiver inválido */
+  #passwordConfirmation.is-invalid ~ #passwordConfirmationFeedback {
+    display: block;
+  }
+  .placeholder-icon { pointer-events: auto; }
+  .pass-toggle{
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 .btn-terms-back{
   height: 42px; 
    padding: 0 16px;      
@@ -74,8 +110,8 @@
           Para concluir o cadastro, complete todas as informações abaixo.
         </p>
 
-        <form id="registerProfileForm" method="POST" action="{{ route('registration.post') }}">
-          @csrf
+      <form id="registerProfileForm" method="POST" action="{{ route('registration.post') }}" data-cep-autofill>
+        @csrf
 
           <div class="row g-3">
 
@@ -94,9 +130,10 @@
               <input type="text" name="whatsapp" class="form-control" required>
             </div>
 
-            <div class="col-12 col-md-6">
+             <div class="col-12 col-md-6">
               <label class="form-label">CEP*</label>
-              <input type="text" name="cep" id="regCep" class="form-control" required>
+              <input type="text" name="cep" class="form-control" required data-cep-field="cep" placeholder="00000-000">
+              <div class="invalid-feedback" data-cep-feedback>CEP inválido.</div>
             </div>
 
             <div class="col-12 col-md-6">
@@ -117,15 +154,15 @@
               </select>
             </div>
 
-            <div class="col-12 col-md-6">
-              <label class="form-label">Cidade*</label>
-              <input type="text" name="city" id="regCity" class="form-control" required>
-            </div>
+           <div class="col-12 col-md-6">
+            <label class="form-label">Cidade*</label>
+            <input type="text" name="city" class="form-control" required data-cep-field="city">
+          </div>
 
             <div class="col-12">
-              <label class="form-label">Endereço*</label>
-              <input type="text" name="address" id="regAddress" class="form-control" required>
-            </div>
+            <label class="form-label">Endereço*</label>
+            <input type="text" name="address" class="form-control" required data-cep-field="address">
+          </div>
 
             <div class="col-12">
               <label class="form-label">Descrição*</label>
@@ -298,13 +335,15 @@
                                     <div class="col-12">
                                         <div class="input-wrapper position-relative mb-20">
                                             <label>Senha*</label>
-                                            <input type="password" name="password" placeholder="Digite aqui sua senha" class="pass-log-id" required>
+
+                                            <input type="password" name="password" placeholder="Digite aqui sua senha" required>
+
                                             <span class="placeholder-icon">
-                                                <span class="passVicon">
-                                                    <img src="{{ asset('assets/img/icon/icon-44.svg') }}" alt="icon">
-                                                </span>
+                                              <button type="button" class="pass-toggle" aria-label="Exibir/ocultar senha">
+                                                <img src="{{ asset('assets/img/icon/icon-44.svg') }}" alt="icon">
+                                              </button>
                                             </span>
-                                        </div>
+                                          </div>
                                         <div id="loginMsg"></div>
                                     </div>
                                    <div class="col-12 text-start mb-2">
@@ -375,57 +414,57 @@
   </div>
 </div>
 
-<!-- Modal 2: Confirmar código -->
-<div class="modal fade" id="verifyEmailCodeModal" tabindex="-1" aria-labelledby="verifyEmailCodeLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="user-data-form modal-content">
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <!-- Modal 2: Confirmar código -->
+              <div class="modal fade" id="verifyEmailCodeModal" tabindex="-1" aria-labelledby="verifyEmailCodeLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="user-data-form modal-content">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
-      <div class="form-wrapper m-auto">
-        <div class="text-center mb-20">
-          <h2 id="verifyEmailCodeLabel">Confirmar código</h2>
-          <p class="mb-1">Digite o código enviado para:</p>
-          <strong id="verifyEmailCodeTo"></strong>
-        </div>
+                    <div class="form-wrapper m-auto">
+                      <div class="text-center mb-20">
+                        <h2 id="verifyEmailCodeLabel">Confirmar código</h2>
+                        <p class="mb-1">Digite o código enviado para:</p>
+                        <strong id="verifyEmailCodeTo"></strong>
+                      </div>
 
-        <form id="verifyEmailCodeForm">
-          @csrf
-          <input type="hidden" id="verifyEmailHiddenEmail" name="email">
+                      <form id="verifyEmailCodeForm">
+                        @csrf
+                        <input type="hidden" id="verifyEmailHiddenEmail" name="email">
 
-          <div class="row">
-            <div class="col-12">
-              <div class="input-wrapper position-relative mb-25">
-                <label>Código*</label>
-                <input type="text" name="token" id="verifyEmailToken" placeholder="Ex.: 123456"
-                       inputmode="numeric" maxlength="6" required>
+                        <div class="row">
+                          <div class="col-12">
+                            <div class="input-wrapper position-relative mb-25">
+                              <label>Código*</label>
+                              <input type="text" name="token" id="verifyEmailToken" placeholder="Ex.: 123456"
+                                    inputmode="numeric" maxlength="6" required>
+                            </div>
+                            <small class="text-muted">O código expira em 15 minutos.</small>
+                          </div>
+
+                          <div class="col-12">
+                            <button type="button" class="btn-four w-100 tran3s d-block mt-20" id="confirmVerifyCodeBtn">
+                              Confirmar
+                            </button>
+                          </div>
+
+                          <div class="col-12 d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-link p-0" id="resendVerifyCodeBtn">Reenviar</button>
+                            <button type="button" class="btn btn-link p-0" id="changeVerifyEmailBtn">Alterar e-mail</button>
+                          </div>
+
+                          <div class="col-12 text-center mt-3">
+                            <button type="button" class="btn btn-link p-0" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">
+                              Voltar para o login
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+
+                      <div id="verifyEmailCodeMsg" class="mt-3"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <small class="text-muted">O código expira em 15 minutos.</small>
-            </div>
-
-            <div class="col-12">
-              <button type="button" class="btn-four w-100 tran3s d-block mt-20" id="confirmVerifyCodeBtn">
-                Confirmar
-              </button>
-            </div>
-
-            <div class="col-12 d-flex justify-content-between mt-3">
-              <button type="button" class="btn btn-link p-0" id="resendVerifyCodeBtn">Reenviar</button>
-              <button type="button" class="btn btn-link p-0" id="changeVerifyEmailBtn">Alterar e-mail</button>
-            </div>
-
-            <div class="col-12 text-center mt-3">
-              <button type="button" class="btn btn-link p-0" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">
-                Voltar para o login
-              </button>
-            </div>
-          </div>
-        </form>
-
-        <div id="verifyEmailCodeMsg" class="mt-3"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
 
                         <!-- Register Tab -->
@@ -452,21 +491,44 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <div class="input-wrapper position-relative mb-20">
-                                            <label>Senha*</label>
-                                            <input type="password" name="password" placeholder="Digite sua nova senha" required>
-                                            <span class="placeholder-icon">
-                                                <span class="passVicon">
-                                                    <img src="{{ asset('assets/img/icon/icon-44.svg') }}" alt="icon">
-                                                </span>
-                                            </span>
-                                        </div>
+                                       <div class="input-wrapper position-relative mb-20">
+                                 <div class="input-wrapper position-relative mb-20">
+                                  <label>Senha*</label>
+
+                                  <input type="password" name="password" placeholder="Digite aqui sua senha" required>
+
+                                  <span class="placeholder-icon">
+                                    <button type="button" class="pass-toggle" aria-label="Exibir/ocultar senha">
+                                      <img src="{{ asset('assets/img/icon/icon-44.svg') }}" alt="icon">
+                                    </button>
+                                  </span>
+                                </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="input-wrapper position-relative mb-20">
-                                            <label>Confirmar Senha*</label>
-                                            <input type="password" name="password_confirmation" placeholder="Confirme sua senha" required>
+                                          <label>Confirmar Senha**</label>
+
+                                          <input
+                                          class="form-control"
+                                            type="password"
+                                            name="password_confirmation"
+                                            id="passwordConfirmation"
+                                            placeholder="Confirme sua senha"
+                                            required
+
+                                          >
+
+                                          <div class="invalid-feedback" id="passwordConfirmationFeedback">
+                                            As senhas não conferem.
+                                          </div>
+
+                                          <span class="placeholder-icon">
+                                            <button type="button" class="pass-toggle" aria-label="Exibir/ocultar senha">
+                                              <img src="{{ asset('assets/img/icon/icon-44.svg') }}" alt="icon">
+                                            </button>
+                                          </span>
                                         </div>
+                                      </div>                             
                                     </div>
                                    
                                     <div class="col-12">
@@ -539,6 +601,22 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Toggle mostrar/ocultar senha (delegação funciona mesmo em modal)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pass-toggle');
+    if (!btn) return;
+
+    const wrapper = btn.closest('.input-wrapper');
+    if (!wrapper) return;
+
+    const input = wrapper.querySelector('input[type="password"], input[type="text"]');
+    if (!input) return;
+
+    input.type = (input.type === 'password') ? 'text' : 'password';
+    btn.classList.toggle('is-visible', input.type === 'text');
+  });
+
   const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
   // Helpers
@@ -681,92 +759,181 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // CADASTRO EM 2 ETAPAS
-  const regForm      = document.getElementById('registrationForm');
-  const profForm     = document.getElementById('registerProfileForm');
-  const regMsg       = document.getElementById('registerMsg');
-  const profMsg      = document.getElementById('regProfileMsg');
-  const profNameInp  = document.getElementById('regProfileName');
-  const closeProfBtn = document.getElementById('closeProfileModalBtn');
+// CADASTRO EM 2 ETAPAS
+const regForm      = document.getElementById('registrationForm');
+const profForm     = document.getElementById('registerProfileForm');
+const regMsg       = document.getElementById('registerMsg');
+const profMsg      = document.getElementById('regProfileMsg');
+const profNameInp  = document.getElementById('regProfileName');
+const closeProfBtn = document.getElementById('closeProfileModalBtn');
 
-  closeProfBtn?.addEventListener('click', () => {
-    profModal?.hide();
-    setTimeout(() => { loginModal?.show(); switchTab('fc2'); }, 150);
-  });
+function showRegError(html) {
+  if (regMsg) regMsg.innerHTML = html;
+}
 
-  document.getElementById('backToRegisterFlowBtn')?.addEventListener('click', () => {
-    profModal?.hide();
-    setTimeout(() => { loginModal?.show(); switchTab('fc2'); }, 150);
-  });
+function validatePasswords(showUI = false) {
+  if (!regForm) return true;
 
-  // 1ª etapa: valida + exige termos + abre modal de perfil
-  if (regForm) {
-    regForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (regMsg) regMsg.innerHTML = '';
+  const pwd  = regForm.querySelector('input[name="password"]');
+  const conf = regForm.querySelector('input[name="password_confirmation"]');
 
-      if (!regForm.reportValidity()) return;
+  const feedback = document.getElementById('passwordConfirmationFeedback');
 
-      const terms = regForm.querySelector('input[name="terms"]');
-      if (terms && !terms.checked) {
-        if (regMsg) regMsg.innerHTML = '<div class="alert alert-danger">Você precisa aceitar os Termos e a Política.</div>';
-        return;
-      }
+  if (!pwd || !conf) return true;
 
-      const nameFromReg = regForm.querySelector('input[name="name"]')?.value || '';
-      if (profNameInp) profNameInp.value = nameFromReg;
+  // helper visual
+  const setInvalid = (msg) => {
+    conf.setCustomValidity(msg || '');
+    conf.classList.add('is-invalid');
+    conf.classList.remove('is-valid');
+    if (feedback) feedback.textContent = msg || 'As senhas não conferem.';
+  };
 
-      loginModal?.hide();
-      setTimeout(() => profModal?.show(), 150);
-    });
+  const setValid = () => {
+    conf.setCustomValidity('');
+    conf.classList.remove('is-invalid');
+    conf.classList.add('is-valid');
+    if (feedback) feedback.textContent = '';
+  };
+
+  // se o campo ainda não foi preenchido, não marca como inválido
+  if (!pwd.value || !conf.value) {
+    conf.classList.remove('is-invalid', 'is-valid');
+    conf.setCustomValidity('');
+    if (feedback) feedback.textContent = '';
+    return true;
   }
 
-  // 2ª etapa: envia tudo junto
-  if (regForm && profForm) {
-    profForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (profMsg) profMsg.innerHTML = '';
+  const ok = pwd.value === conf.value;
 
-      if (!profForm.reportValidity()) return;
-
-      const fd = new FormData(regForm);
-
-      // Usa o name do modal de perfil
-      if (profNameInp) {
-        fd.delete('name');
-        fd.append('name', profNameInp.value);
-      }
-
-      const fd2 = new FormData(profForm);
-      for (const [k, v] of fd2.entries()) {
-        if (k === '_token') continue;
-        fd.append(k, v);
-      }
-
-      try {
-        const res = await fetch(@json(route('registration.post')), {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': csrf,
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: fd,
-          credentials: 'same-origin'
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok || !data.success) throw new Error(data.message || 'Erro ao cadastrar. Verifique os campos.');
-
-        window.location.href = data.redirect || '/painel';
-      } catch (err) {
-        if (profMsg) {
-          profMsg.innerHTML = '<div class="alert alert-danger">' + (err.message || 'Falha ao enviar cadastro. Tente novamente.') + '</div>';
-        }
-      }
-    });
+  if (!ok) {
+    setInvalid('As senhas não conferem.');
+    if (showUI) {
+      showRegError('<div class="alert alert-danger">As senhas não conferem.</div>');
+    }
+    return false;
   }
+
+  setValid();
+  return true;
+}
+
+
+if (regForm) {
+  const pwd  = regForm.querySelector('input[name="password"]');
+  const conf = regForm.querySelector('input[name="password_confirmation"]');
+  const regSubmitBtn = regForm.querySelector('button[type="submit"]');
+
+  // UX: se o usuário digitar confirmação diferente, já bloqueia o botão (e força corrigir antes de seguir)
+const refreshSubmitState = () => {
+  if (!regSubmitBtn || !pwd || !conf) return;
+
+  // atualiza feedback visual enquanto digita (sem alert)
+  validatePasswords(false);
+
+  const shouldBlock = (pwd.value && conf.value && pwd.value !== conf.value);
+  regSubmitBtn.disabled = shouldBlock;
+
+  if (!shouldBlock && regMsg) regMsg.innerHTML = '';
+};
+
+  pwd?.addEventListener('input', refreshSubmitState);
+  conf?.addEventListener('input', refreshSubmitState);
+
+  regForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (regMsg) regMsg.innerHTML = '';
+
+    // valida campos required do HTML
+    if (!regForm.reportValidity()) return;
+
+    // valida senha x confirmação
+    if (!validatePasswords(true)) return;
+
+    // valida termos
+    const terms = regForm.querySelector('input[name="terms"]');
+    if (terms && !terms.checked) {
+      showRegError('<div class="alert alert-danger">Você precisa aceitar os Termos e a Política.</div>');
+      return;
+    }
+
+    // preenche nome no modal 2
+    const nameFromReg = regForm.querySelector('input[name="name"]')?.value || '';
+    if (profNameInp) profNameInp.value = nameFromReg;
+
+    // só aqui abre o modal 2
+    loginModal?.hide();
+    setTimeout(() => profModal?.show(), 150);
+  });
+}
+
+// fechar modal 2
+closeProfBtn?.addEventListener('click', () => {
+  profModal?.hide();
+  setTimeout(() => { loginModal?.show(); switchTab('fc2'); }, 150);
+});
+
+// 2ª etapa: envia tudo junto
+if (regForm && profForm) {
+  profForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (profMsg) profMsg.innerHTML = '';
+
+    // segurança extra: se senha divergir, nem deixa enviar (caso alguém altere via devtools)
+    if (!validatePasswords(true)) {
+      profModal?.hide();
+      setTimeout(() => { loginModal?.show(); switchTab('fc2'); }, 150);
+      return;
+    }
+
+    if (!profForm.reportValidity()) return;
+
+    const fd = new FormData(regForm);
+
+    // Usa o name do modal de perfil
+    if (profNameInp) {
+      fd.delete('name');
+      fd.append('name', profNameInp.value);
+    }
+
+    const fd2 = new FormData(profForm);
+    for (const [k, v] of fd2.entries()) {
+      if (k === '_token') continue;
+      fd.append(k, v);
+    }
+
+    try {
+      const res = await fetch(@json(route('registration.post')), {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrf,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: fd,
+        credentials: 'same-origin'
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      // pega erros de validação do Laravel (422)
+      if (res.status === 422 && data.errors) {
+        const first = Object.values(data.errors).flat()[0] || 'Erro de validação.';
+        throw new Error(first);
+      }
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Erro ao cadastrar. Verifique os campos.');
+      }
+
+      window.location.href = data.redirect || '/painel';
+    } catch (err) {
+      if (profMsg) {
+        profMsg.innerHTML = '<div class="alert alert-danger">' + (err.message || 'Falha ao enviar cadastro. Tente novamente.') + '</div>';
+      }
+    }
+  });
+}
 });
 </script>
 @endpush

@@ -57,10 +57,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.forgot');
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
+Route::prefix('password')->name('password.')->group(function () {
+    Route::post('/forgot', [AuthController::class, 'forgotPassword'])->name('forgot');
+    Route::get('/reset/{token}', [AuthController::class, 'showResetPassword'])->name('reset');
+    Route::post('/reset', [AuthController::class, 'resetPassword'])->name('update');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +70,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth.modal')->group(function () {
 
   Route::get('/painel', [UserController::class, 'painel'])->name('painel');
 

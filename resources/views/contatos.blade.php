@@ -73,7 +73,7 @@
                             <div class="title-one text-center">
                                 <h2 class="title">Precisa de ajuda imediata?</h2>
                                 <p class="mb-3">Clique no botão abaixo para falar com nosso time via WhatsApp.</p>
-                                <a href="https://wa.me/5511999999999" target="_blank" rel="noopener" class="ht-btn mt-25">Fale pelo WhatsApp</a>
+                                <a href="https://wa.me/5511999999999" target="_blank" rel="noopener"  target="_blank" class="ht-btn mt-25">Fale pelo WhatsApp</a>
                             </div>
                         </div>
                     </div>

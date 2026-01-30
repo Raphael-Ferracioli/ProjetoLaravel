@@ -173,6 +173,60 @@
 
 @push('styles')
 <style>
+
+/* 1) Faz todas as colunas esticarem e o card ocupar 100% */
+#professionalsList > [class*="col-"]{
+  display: flex;
+}
+.team-wrap-2{
+  display: flex;
+  flex-direction: column;
+  height: 100%;          /* todos iguais dentro da mesma linha */
+}
+
+/* 2) Thumb com altura fixa (já tem) */
+.team-thumb{
+  height: 220px;
+  flex: 0 0 auto;
+}
+
+/* 3) Conteúdo com altura consistente */
+.team-wrap-2 .content{
+  flex: 1 1 auto;        /* ocupa o restante */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 14px 18px;
+  text-align: center;
+}
+
+/* 4) Limita nome e descrição em número de linhas (não deixa “estourar”) */
+.team-wrap-2 .name{
+  margin-bottom: 6px;
+}
+.team-wrap-2 .name a{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;         /* no máx 2 linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.team-wrap-2 .designation{
+  margin: 0;
+  color:#666;
+  font-size:.9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;         /* no máx 2 linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(2 * 1.2em);   /* reserva espaço fixo p/ 2 linhas */
+}
+
+/* 5) Localização mantém no “rodapé” do conteúdo */
+.team-wrap-2 .content .d-flex{
+  margin-top: 10px;
+}
+
   /* deixa o card de filtros parecido */
   .filters_card{
     padding:16px;
