@@ -99,10 +99,10 @@
           {{-- LISTA à direita --}}
           <div class="col-lg-9">
 
-            <div class="row justify-content-start align-items-start" id="professionalsList">
+            <div class="row justify-content-start align-items-stretch" id="professionalsList">
               @foreach($profissionais as $prof)
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                  <div class="team-wrap-2">
+                <div class="col-xl-3 col-lg-4 col-md-6 d-flex mb-3">
+                  <div class="team-wrap-2 w-100 h-100">
                     <div class="team-thumb">
                     
 
@@ -173,130 +173,149 @@
 
 @push('styles')
 <style>
+  #professionalsList{
 
-/* 1) Faz todas as colunas esticarem e o card ocupar 100% */
+  
+margin-bottom:1em;
+  }
+/* --- Colunas viram flex para o card ocupar 100% --- */
 #professionalsList > [class*="col-"]{
-  display: flex;
+  display: flex,
+  
 }
+
+/* --- Card: estrutura e visual base --- */
 .team-wrap-2{
+  
   display: flex;
   flex-direction: column;
-  height: 100%;          /* todos iguais dentro da mesma linha */
+  width: 100%;
+  height: 100%;
+
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden; /* evita “vazar” */
+  box-shadow: 0 5px 15px rgba(0,0,0,.08);
+  margin-bottom: 24px;
 }
 
-/* 2) Thumb com altura fixa (já tem) */
+/* --- Imagem/Thumb com altura fixa --- */
 .team-thumb{
+  position: relative;
   height: 220px;
   flex: 0 0 auto;
+  overflow: hidden;
+}
+.team-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* 3) Conteúdo com altura consistente */
+/* --- Social overlay --- */
+.team-social{
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 10px;
+
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+
+  opacity: 0;
+  transform: translateY(8px);
+  transition: .2s ease;
+}
+.team-thumb:hover .team-social{
+  opacity: 1;
+  transform: translateY(0);
+}
+.team-social a{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+  color: #111;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,.10);
+}
+
+/* --- Conteúdo: ocupa o restante do card --- */
 .team-wrap-2 .content{
-  flex: 1 1 auto;        /* ocupa o restante */
+  flex: 1 1 auto;
+  min-width: 0; /* CRUCIAL em flex pra não estourar */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   padding: 14px 14px 18px;
   text-align: center;
 }
 
-/* 4) Limita nome e descrição em número de linhas (não deixa “estourar”) */
+/* --- Nome (máx 2 linhas) --- */
 .team-wrap-2 .name{
   margin-bottom: 6px;
 }
 .team-wrap-2 .name a{
+  color: #111;
+  text-decoration: none;
+  font-weight: 700;
+
   display: -webkit-box;
-  -webkit-line-clamp: 2;         /* no máx 2 linhas */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+
   overflow: hidden;
+  overflow-wrap: anywhere; /* quebra palavras/links enormes */
+  word-break: break-word;
 }
 
+/* --- Especialidades (máx 2 linhas + reserva espaço fixo) --- */
 .team-wrap-2 .designation{
   margin: 0;
-  color:#666;
-  font-size:.9rem;
+  color: #666;
+  font-size: .9rem;
+  line-height: 1.2;
+
   display: -webkit-box;
-  -webkit-line-clamp: 2;         /* no máx 2 linhas */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+
   overflow: hidden;
-  min-height: calc(2 * 1.2em);   /* reserva espaço fixo p/ 2 linhas */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  min-height: calc(2 * 1.2em); /* mantém mesma altura mesmo com texto curto */
 }
 
-/* 5) Localização mantém no “rodapé” do conteúdo */
+/* --- Linha de localização: 1 linha com reticências --- */
 .team-wrap-2 .content .d-flex{
   margin-top: 10px;
 }
+.team-wrap-2 .location{
+  margin: 0 0 0 6px;
+  color: #666;
 
-  /* deixa o card de filtros parecido */
-  .filters_card{
-    padding:16px;
-    border-radius:10px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-  }
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  /* se seu tema já tem team-wrap-2/team-thumb/team-social, ótimo.
-     se não tiver, isso dá o “shape” parecido com o PHP */
-  .team-wrap-2{
-    background:#fff;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-    margin-bottom:24px;
-  }
-  .team-thumb{
-    position:relative;
-    height:220px;
-    overflow:hidden;
-  }
-  .team-thumb img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-  }
-  .team-social{
-    position:absolute;
-    left:0; right:0;
-    bottom:10px;
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    opacity:0;
-    transform:translateY(8px);
-    transition:.2s ease;
-  }
-  .team-thumb:hover .team-social{
-    opacity:1;
-    transform:translateY(0);
-  }
-  .team-social a{
-    width:36px;height:36px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#fff;
-    color:#111;
-    text-decoration:none;
-    box-shadow:0 5px 15px rgba(0,0,0,.10);
-  }
-  .team-wrap-2 .content{
-    padding:14px 14px 18px;
-    text-align:center;
-  }
-  .team-wrap-2 .name a{
-    color:#111; text-decoration:none; font-weight:700;
-  }
-  .team-wrap-2 .designation{
-    color:#666;
-    font-size:.9rem;
-    min-height:40px;
-  }
-  .team-wrap-2 .location{
-    margin:0 0 0 6px;
-    color:#666;
-  }
+/* --- Card dos filtros (esquerda) --- */
+.filters_card{
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.08);
+}
 </style>
 @endpush
+
 
 
 @push('scripts')

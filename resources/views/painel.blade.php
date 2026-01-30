@@ -120,7 +120,7 @@
             {{-- Descrição --}}
             <p class="description">
               {{ Auth::user()->description ?: 'Nenhuma descrição cadastrada.' }}
-              <a href="#" description class="edit-field ms-1" data-field="description" data-value="{{ Auth::user()->description }}">
+              <a href="#"  class="edit-field ms-1" data-field="description" data-value="{{ Auth::user()->description }}">
                 <i class="bi bi-pencil-square"></i>
               </a>
             </p>
@@ -363,6 +363,24 @@
 
 @push('styles')
 <style>
+
+  .biography-content,
+.col-xl-7,
+.col-lg-6 {
+  min-width: 0;
+}
+
+/* Evita texto gigante estourar o card */
+.biography-content .description,
+.biography-content .location-display,
+.biography-content .addres-line,
+.biography-content .name {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere; /* quebra até em strings sem espaço */
+  word-break: break-word;  /* fallback */
+  hyphens: auto;
+}
   .profile-image-wrapper{
   position: relative;
   width: 100%;
