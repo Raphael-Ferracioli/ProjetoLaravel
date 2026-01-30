@@ -120,13 +120,13 @@
             {{-- Descrição --}}
             <p class="description">
               {{ Auth::user()->description ?: 'Nenhuma descrição cadastrada.' }}
-              <a href="#" class="edit-field ms-1" data-field="description" data-value="{{ Auth::user()->description }}">
+              <a href="#" description class="edit-field ms-1" data-field="description" data-value="{{ Auth::user()->description }}">
                 <i class="bi bi-pencil-square"></i>
               </a>
             </p>
 
             {{-- Telefone --}}
-            <h5 class="addres-line">
+            <h5 class="addres-line" style="max-width: 500px;">
               <span><i class="bi bi-telephone-outbound"></i></span>
               {{ Auth::user()->phone ?: 'Não cadastrado' }}
               <a href="#" class="edit-field ms-1" data-field="phone" data-value="{{ Auth::user()->phone }}">
@@ -144,7 +144,7 @@
             </h5>
 
             {{-- Email (bloqueado) --}}
-            <h5 class="addres-line">
+            <h5 class="addres-line" style="max-width: 500px;">
               <span><i class="bi bi-envelope-paper"></i></span>
               {{ Auth::user()->email }}
               <span class="ms-2 text-muted ms-1" title="E-mail cadastrado e não editável pelo usuário">
@@ -162,7 +162,7 @@
               $hasLocation = !empty($loc_parts);
             @endphp
 
-            <h5 class="addres-line font-bold">
+            <h5 class="addres-line font-bold" style="max-width: 500px;">
               <span><i class="bi bi-geo-alt"></i></span>
 
               @if($hasLocation)
@@ -240,119 +240,119 @@
 </section>
 
 @if(!Auth::user()->profile_completed)
-{{-- <div class="modal fade"
-     id="firstLoginModal"
-     tabindex="-1"
-     data-bs-backdrop="static"
-     data-bs-keyboard="false"
-     aria-hidden="true">
+  {{-- <div class="modal fade"
+      id="firstLoginModal"
+      tabindex="-1"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      aria-hidden="true">
 
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title">Complete seu perfil</h5>
+        <div class="modal-header">
+          <h5 class="modal-title">Complete seu perfil</h5>
+        </div>
+
+        <div class="modal-body">
+          <p class="text-muted mb-3">
+            Para continuar, complete todas as informações abaixo.
+          </p>
+
+  <form id="firstLoginForm">
+    @csrf
+
+    <div class="row g-3">
+
+
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">Nome*</label>
+        <input type="text" name="name" class="form-control" required>
       </div>
 
-      <div class="modal-body">
-        <p class="text-muted mb-3">
-          Para continuar, complete todas as informações abaixo.
-        </p>
 
-<form id="firstLoginForm">
-  @csrf
-
-  <div class="row g-3">
-
-
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">Nome*</label>
-      <input type="text" name="name" class="form-control" required>
-    </div>
-
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">Telefone*</label>
-      <input type="text" name="phone" class="form-control" required>
-    </div>
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">WhatsApp*</label>
-      <input type="text" name="whatsapp" class="form-control" required>
-    </div>
-
-
-    <div class="col-12 col-md-6">
-      <label class="form-label">CEP*</label>
-      <input type="text" name="cep" id="firstCep" class="form-control" required>
-    </div>
-
- <div class="col-12 col-md-6">
-  <label class="form-label">Estado*</label>
-
-  @php
-    $currentUf = strtoupper(trim(Auth::user()->state ?? ''));
-
-    $ufs = [
-      'AC'=>'Acre','AL'=>'Alagoas','AP'=>'Amapá','AM'=>'Amazonas','BA'=>'Bahia','CE'=>'Ceará','DF'=>'Distrito Federal',
-      'ES'=>'Espírito Santo','GO'=>'Goiás','MA'=>'Maranhão','MT'=>'Mato Grosso','MS'=>'Mato Grosso do Sul','MG'=>'Minas Gerais',
-      'PA'=>'Pará','PB'=>'Paraíba','PR'=>'Paraná','PE'=>'Pernambuco','PI'=>'Piauí','RJ'=>'Rio de Janeiro','RN'=>'Rio Grande do Norte',
-      'RS'=>'Rio Grande do Sul','RO'=>'Rondônia','RR'=>'Roraima','SC'=>'Santa Catarina','SP'=>'São Paulo','SE'=>'Sergipe','TO'=>'Tocantins'
-    ];
-  @endphp
-
-  <select name="state" id="firstState" class="form-select" required>
-    <option value="">Selecione</option>
-
-    @foreach($ufs as $uf => $label)
-      <option value="{{ $uf }}" {{ $currentUf === $uf ? 'selected' : '' }}>
-        {{ $label }} ({{ $uf }})
-      </option>
-    @endforeach
-  </select>
-</div> --}}
-
-
-    {{-- <div class="col-12 col-md-6">
-      <label class="form-label">Cidade*</label>
-      <input type="text" name="city" id="firstCity" class="form-control" required>
-    </div> --}}
-
-    {{-- <div class="col-12">
-      <label class="form-label">Endereço*</label>
-      <input type="text" name="address" id="firstAddress" class="form-control" required>
-    </div>
-
-        <div class="col-12">
-      <label class="form-label">Especialidades* (escolha pelo menos uma)</label>
-      <select name="specialties[]" class="form-select" multiple required style="min-height: 180px;">
-        @foreach($specialties as $spec)
-          <option value="{{ $spec->id }}">{{ $spec->name }}</option>
-        @endforeach
-      </select>
-      <small class="text-muted">Dica: segure Ctrl (Windows) / Cmd (Mac) para selecionar várias.</small>
-    </div>
-
-
-    <div class="col-12">
-      <label class="form-label">Descrição profissional*</label>
-      <textarea name="description" class="form-control" rows="5" required></textarea>
-    </div> --}}
-
-
-  {{-- </div>
-</form> --}}
-
-
-        {{-- <div id="firstLoginMsg" class="mt-2"></div>
+      <div class="col-12 col-md-6">
+        <label class="form-label">Telefone*</label>
+        <input type="text" name="phone" class="form-control" required>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-primary w-100" id="saveFirstProfile">
-          Salvar e continuar
-        </button>
+      <div class="col-12 col-md-6">
+        <label class="form-label">WhatsApp*</label>
+        <input type="text" name="whatsapp" class="form-control" required>
+      </div>
+
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">CEP*</label>
+        <input type="text" name="cep" id="firstCep" class="form-control" required>
+      </div>
+
+  <div class="col-12 col-md-6">
+    <label class="form-label">Estado*</label>
+
+    @php
+      $currentUf = strtoupper(trim(Auth::user()->state ?? ''));
+
+      $ufs = [
+        'AC'=>'Acre','AL'=>'Alagoas','AP'=>'Amapá','AM'=>'Amazonas','BA'=>'Bahia','CE'=>'Ceará','DF'=>'Distrito Federal',
+        'ES'=>'Espírito Santo','GO'=>'Goiás','MA'=>'Maranhão','MT'=>'Mato Grosso','MS'=>'Mato Grosso do Sul','MG'=>'Minas Gerais',
+        'PA'=>'Pará','PB'=>'Paraíba','PR'=>'Paraná','PE'=>'Pernambuco','PI'=>'Piauí','RJ'=>'Rio de Janeiro','RN'=>'Rio Grande do Norte',
+        'RS'=>'Rio Grande do Sul','RO'=>'Rondônia','RR'=>'Roraima','SC'=>'Santa Catarina','SP'=>'São Paulo','SE'=>'Sergipe','TO'=>'Tocantins'
+      ];
+    @endphp
+
+    <select name="state" id="firstState" class="form-select" required>
+      <option value="">Selecione</option>
+
+      @foreach($ufs as $uf => $label)
+        <option value="{{ $uf }}" {{ $currentUf === $uf ? 'selected' : '' }}>
+          {{ $label }} ({{ $uf }})
+        </option>
+      @endforeach
+    </select>
+  </div> --}}
+
+
+      {{-- <div class="col-12 col-md-6">
+        <label class="form-label">Cidade*</label>
+        <input type="text" name="city" id="firstCity" class="form-control" required>
       </div> --}}
+
+      {{-- <div class="col-12">
+        <label class="form-label">Endereço*</label>
+        <input type="text" name="address" id="firstAddress" class="form-control" required>
+      </div>
+
+          <div class="col-12">
+        <label class="form-label">Especialidades* (escolha pelo menos uma)</label>
+        <select name="specialties[]" class="form-select" multiple required style="min-height: 180px;">
+          @foreach($specialties as $spec)
+            <option value="{{ $spec->id }}">{{ $spec->name }}</option>
+          @endforeach
+        </select>
+        <small class="text-muted">Dica: segure Ctrl (Windows) / Cmd (Mac) para selecionar várias.</small>
+      </div>
+
+
+      <div class="col-12">
+        <label class="form-label">Descrição profissional*</label>
+        <textarea name="description" class="form-control" rows="5" required></textarea>
+      </div> --}}
+
+
+    {{-- </div>
+  </form> --}}
+
+
+          {{-- <div id="firstLoginMsg" class="mt-2"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary w-100" id="saveFirstProfile">
+            Salvar e continuar
+          </button>
+        </div> --}}
 
     </div>
   </div>
@@ -363,7 +363,7 @@
 
 @push('styles')
 <style>
-  profile-image-wrapper{
+  .profile-image-wrapper{
   position: relative;
   width: 100%;
   border-radius: 12px;
@@ -610,6 +610,143 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endif
+
+<script>
+/** ========= CEP Autofill (reutilizável) ========= */
+function initCepAutofill(formEl) {
+  const cepEl = formEl.querySelector('[data-cep-field="cep"]');
+  const stateEl = formEl.querySelector('[data-cep-field="state"]');
+  const cityEl = formEl.querySelector('[data-cep-field="city"]');
+  const addressEl = formEl.querySelector('[data-cep-field="address"]');
+  const feedbackEl = formEl.querySelector('[data-cep-feedback]');
+  const statusEl = formEl.querySelector('[data-cep-status]');
+
+  if (!cepEl) return;
+
+  let timer = null;
+  let controller = null;
+  let lastCep = null;
+  let lastData = null;
+
+  const onlyDigits = (s) => (s || "").replace(/\D/g, "");
+  const formatCep = (v) => {
+    const d = onlyDigits(v).slice(0, 8);
+    return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  };
+
+  const setStatus = (txt, cls = "text-muted") => {
+    if (!statusEl) return;
+    statusEl.className = `form-text ${cls}`;
+    statusEl.textContent = txt || "";
+  };
+
+  const setLoading = (on) => {
+    if (stateEl) stateEl.disabled = !!on;
+    if (on) setStatus("Buscando endereço...", "text-muted");
+  };
+
+  const setValid = () => {
+    cepEl.classList.remove("is-invalid");
+    cepEl.classList.add("is-valid");
+    cepEl.setCustomValidity("");
+    if (feedbackEl) feedbackEl.textContent = "";
+    setStatus("Endereço preenchido pelo CEP.", "text-success");
+    setTimeout(() => setStatus(""), 2000);
+  };
+
+  const setInvalid = (msg) => {
+    cepEl.classList.remove("is-valid");
+    cepEl.classList.add("is-invalid");
+    cepEl.setCustomValidity(msg || "CEP inválido.");
+    if (feedbackEl) feedbackEl.textContent = msg || "CEP inválido.";
+    setStatus(msg || "CEP inválido.", "text-danger");
+  };
+
+  const fire = (el, type) => el && el.dispatchEvent(new Event(type, { bubbles: true }));
+
+  const applyData = (data) => {
+    // UF
+    if (stateEl && data.uf) {
+      stateEl.value = data.uf;
+      fire(stateEl, "change");
+    }
+
+    // Cidade
+    if (cityEl) {
+      cityEl.value = data.localidade || "";
+      fire(cityEl, "input");
+    }
+
+    // Endereço: logradouro + bairro (se existir)
+    if (addressEl) {
+      const parts = [data.logradouro, data.bairro].filter(Boolean);
+      addressEl.value = parts.join(" - ");
+      fire(addressEl, "input");
+    }
+  };
+
+  const lookup = async () => {
+    const cepDigits = onlyDigits(cepEl.value);
+
+    // limpa enquanto digita
+    cepEl.classList.remove("is-valid", "is-invalid");
+    cepEl.setCustomValidity("");
+    if (feedbackEl) feedbackEl.textContent = "";
+    setStatus("");
+
+    if (cepDigits.length !== 8) return;
+
+    if (cepDigits === lastCep && lastData) {
+      applyData(lastData);
+      setValid();
+      return;
+    }
+
+    if (controller) controller.abort();
+    controller = new AbortController();
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`, {
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+
+      if (!res.ok) throw new Error("Falha ao consultar CEP.");
+      const data = await res.json();
+      if (data.erro) throw new Error("CEP não encontrado.");
+
+      lastCep = cepDigits;
+      lastData = data;
+
+      applyData(data);
+      setValid();
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      setInvalid(err.message || "CEP inválido.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // máscara + debounce
+  cepEl.addEventListener("input", () => {
+    cepEl.value = formatCep(cepEl.value);
+    clearTimeout(timer);
+    timer = setTimeout(lookup, 300);
+  });
+
+  // blur também
+  cepEl.addEventListener("blur", lookup);
+
+  // se já vier com CEP (edição), tenta preencher ao abrir
+  if (onlyDigits(cepEl.value).length === 8) {
+    lookup();
+  }
+}
+</script>
+
 <script>
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -709,38 +846,90 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    if (field === 'location') {
-      title.textContent = 'Editar localização';
-      const cep    = triggerEl.dataset.cep || '';
-      const street = triggerEl.dataset.street || '';
-      const city   = triggerEl.dataset.city || '';
-      const state  = triggerEl.dataset.state || '';
+if (field === 'location') {
+  title.textContent = 'Editar localização';
 
-      return `
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label class="form-label">CEP*</label>
-            <input type="text" class="form-control" name="cep" value="${cep.replace(/"/g,'&quot;')}" required>
-          </div>
+  const cep    = triggerEl.dataset.cep || '';
+  const street = triggerEl.dataset.street || '';
+  const city   = triggerEl.dataset.city || '';
+  const state  = triggerEl.dataset.state || '';
 
-          <div class="col-md-8 mb-3">
-            <label class="form-label">Endereço*</label>
-            <input type="text" class="form-control" name="address" value="${street.replace(/"/g,'&quot;')}" required>
-          </div>
+  // opções UF (string Blade dentro do JS)
+  const ufsOptions = `
+    <option value="">Selecione</option>
+    @php
+      $ufs = [
+        'AC'=>'Acre','AL'=>'Alagoas','AP'=>'Amapá','AM'=>'Amazonas','BA'=>'Bahia','CE'=>'Ceará','DF'=>'Distrito Federal',
+        'ES'=>'Espírito Santo','GO'=>'Goiás','MA'=>'Maranhão','MT'=>'Mato Grosso','MS'=>'Mato Grosso do Sul','MG'=>'Minas Gerais',
+        'PA'=>'Pará','PB'=>'Paraíba','PR'=>'Paraná','PE'=>'Pernambuco','PI'=>'Piauí','RJ'=>'Rio de Janeiro','RN'=>'Rio Grande do Norte',
+        'RS'=>'Rio Grande do Sul','RO'=>'Rondônia','RR'=>'Roraima','SC'=>'Santa Catarina','SP'=>'São Paulo','SE'=>'Sergipe','TO'=>'Tocantins'
+      ];
+    @endphp
+    @foreach($ufs as $uf => $label)
+      <option value="{{ $uf }}">{{ $label }} ({{ $uf }})</option>
+    @endforeach
+  `;
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Cidade*</label>
-            <input type="text" class="form-control" name="city" value="${city.replace(/"/g,'&quot;')}" required>
-          </div>
+  return `
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">CEP*</label>
+        <input
+          type="text"
+          class="form-control"
+          name="cep"
+          value="${cep.replace(/"/g,'&quot;')}"
+          required
+          placeholder="00000-000"
+          inputmode="numeric"
+          autocomplete="postal-code"
+          data-cep-field="cep"
+        >
+        <div class="invalid-feedback" data-cep-feedback>CEP inválido.</div>
+        <div data-cep-status class="form-text"></div>
+      </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Estado*</label>
-            <input type="text" class="form-control" name="state" value="${state.replace(/"/g,'&quot;')}" required>
-          </div>
-        </div>
-      `;
-    }
+      <div class="col-md-8">
+        <label class="form-label">Endereço*</label>
+        <input
+          type="text"
+          class="form-control"
+          name="address"
+          value="${street.replace(/"/g,'&quot;')}"
+          required
+          autocomplete="street-address"
+          data-cep-field="address"
+        >
+      </div>
 
+      <div class="col-md-6">
+        <label class="form-label">Cidade*</label>
+        <input
+          type="text"
+          class="form-control"
+          name="city"
+          value="${city.replace(/"/g,'&quot;')}"
+          required
+          autocomplete="address-level2"
+          data-cep-field="city"
+        >
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Estado*</label>
+        <select
+          class="form-select"
+          name="state"
+          required
+          data-cep-field="state"
+          data-initial-state="${state.replace(/"/g,'&quot;')}"
+        >
+          ${ufsOptions}
+        </select>
+      </div>
+    </div>
+  `;
+}
  if (field === 'specialties') {
   title.textContent = 'Editar especialidades';
   const ids = (triggerEl.dataset.ids || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -784,8 +973,28 @@ document.addEventListener('DOMContentLoaded', () => {
       currentField = el.dataset.field;
       setMsg('');
 
-      body.innerHTML = `<form id="editForm">${templateFor(currentField, el)}</form>`;
-      modal.show();
+      const isLocation = currentField === 'location';
+
+body.innerHTML = `
+  <form id="editForm" ${isLocation ? 'data-cep-autofill' : ''}>
+    ${templateFor(currentField, el)}
+  </form>
+`;
+
+modal.show();
+
+// se for localização, aplica o CEP component AGORA (porque o HTML nasceu agora)
+if (isLocation) {
+  const form = document.getElementById('editForm');
+  if (form) {
+    // seta UF inicial no select (antes/independente do CEP)
+    const st = form.querySelector('[data-cep-field="state"]');
+    if (st && st.dataset.initialState) st.value = st.dataset.initialState;
+
+    initCepAutofill(form);
+  }
+}
+
     });
   });
 

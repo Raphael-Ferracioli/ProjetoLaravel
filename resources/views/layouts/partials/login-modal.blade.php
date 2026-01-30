@@ -41,13 +41,13 @@
 </button>
 
 <style>
+  [data-cep-field="cep"].is-invalid ~ [data-cep-feedback] {
+  display: block !important;
+}
     /* garante que a mensagem não seja cortada */
   #loginModal .input-wrapper { overflow: visible !important; }
 
-  /* mostra o feedback quando o input estiver inválido */
-  #loginModal #passwordConfirmation.is-invalid + #passwordConfirmationFeedback {
-    display: block !important;
-  }
+
 
   /* deixa o feedback bonitinho */
   #loginModal #passwordConfirmationFeedback{
@@ -122,12 +122,29 @@
 
             <div class="col-12 col-md-6">
               <label class="form-label">Telefone*</label>
-              <input type="text" name="phone" class="form-control" required>
+               <input
+                type="text"
+                name="phone"
+                class="form-control"
+                required
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="(00) 00000-0000"
+                data-mask="phoneBR"
+                required
+              >
             </div>
 
             <div class="col-12 col-md-6">
               <label class="form-label">WhatsApp*</label>
-              <input type="text" name="whatsapp" class="form-control" required>
+              <input type="text"
+              name="whatsapp"
+              class="form-control"
+              required
+              inputmode="tel"
+              autocomplete="tel"
+              placeholder="(00) 00000-0000"
+              data-mask="phoneBR" required>
             </div>
 
              <div class="col-12 col-md-6">
@@ -146,7 +163,7 @@
                   'RS'=>'Rio Grande do Sul','RO'=>'Rondônia','RR'=>'Roraima','SC'=>'Santa Catarina','SP'=>'São Paulo','SE'=>'Sergipe','TO'=>'Tocantins'
                 ];
               @endphp
-              <select name="state" id="regState" class="form-select" required>
+              <select name="state" id="regState" class="form-select" required data-cep-field="state">
                 <option value="">Selecione</option>
                 @foreach($ufs as $uf => $label)
                   <option value="{{ $uf }}">{{ $label }} ({{ $uf }})</option>
@@ -600,7 +617,164 @@
 </div>
 @push('scripts')
 <script>
+/** ========= Máscaras (BR) ========= */
+function formatPhoneBR(value) {
+  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
+
+  if (!digits) return "";
+
+  const ddd = digits.slice(0, 2);
+  const rest = digits.slice(2);
+
+  // 11 dígitos = celular (9xxxx-xxxx), 10 = fixo (xxxx-xxxx)
+  const isMobile = digits.length > 10;
+  const part1Len = isMobile ? 5 : 4;
+
+  const p1 = rest.slice(0, part1Len);
+  const p2 = rest.slice(part1Len, part1Len + 4);
+
+  let out = "";
+  if (ddd.length) out += `(${ddd}`;
+  if (ddd.length === 2) out += ") ";
+  if (p1.length) out += p1;
+  if (p2.length) out += `-${p2}`;
+
+  return out;
+}
+
+function bindPhoneMask(input) {
+  if (!input || input.dataset.maskBound === "1") return;
+  input.dataset.maskBound = "1";
+
+  const apply = () => {
+    const formatted = formatPhoneBR(input.value);
+    input.value = formatted;
+  };
+
+  input.addEventListener("input", apply);
+  input.addEventListener("blur", apply);
+
+  // aplica já na carga (caso venha preenchido)
+  apply();
+}
+
+function initInputMasks(container = document) {
+  container.querySelectorAll('input[data-mask="phoneBR"]').forEach(bindPhoneMask);
+}
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', () => {
+
+initInputMasks(document);
+
+ // ========= CEP Autofill "Component" =========
+function initCepAutofill(formEl) {
+  const cepEl = formEl.querySelector('[data-cep-field="cep"]');
+  const stateEl = formEl.querySelector('[data-cep-field="state"]');
+  const cityEl = formEl.querySelector('[data-cep-field="city"]');
+  const addressEl = formEl.querySelector('[data-cep-field="address"]');
+  const neighborhoodEl = formEl.querySelector('[data-cep-field="neighborhood"]');
+  const feedbackEl = formEl.querySelector('[data-cep-feedback]');
+
+  if (!cepEl) return;
+
+  let timer = null;
+  let lastCep = null;
+  let lastData = null;
+  let controller = null;
+
+  const onlyDigits = (s) => (s || "").replace(/\D/g, "");
+  const formatCep = (v) => {
+    const d = onlyDigits(v).slice(0, 8);
+    return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  };
+
+  const setLoading = (on) => {
+    // não bloqueio city/address (pq pode ter tema/UX), mas você pode travar se quiser
+    if (stateEl) stateEl.disabled = !!on; // select melhor desabilitar
+  };
+
+  const setValid = () => {
+    cepEl.classList.remove("is-invalid");
+    cepEl.classList.add("is-valid");
+    cepEl.setCustomValidity("");
+    if (feedbackEl) feedbackEl.textContent = "";
+  };
+
+  const setInvalid = (msg) => {
+    cepEl.classList.remove("is-valid");
+    cepEl.classList.add("is-invalid");
+    cepEl.setCustomValidity(msg || "CEP inválido.");
+    if (feedbackEl) feedbackEl.textContent = msg || "CEP inválido.";
+  };
+
+  const applyData = (data) => {
+    if (stateEl && data.uf) stateEl.value = data.uf;
+    if (cityEl) cityEl.value = data.localidade || "";
+    if (addressEl) addressEl.value = data.logradouro || "";
+    if (neighborhoodEl) neighborhoodEl.value = data.bairro || "";
+  };
+
+  const lookup = async () => {
+    const cepDigits = onlyDigits(cepEl.value);
+
+    // limpa estados visuais enquanto digita
+    cepEl.classList.remove("is-valid", "is-invalid");
+    cepEl.setCustomValidity("");
+    if (feedbackEl) feedbackEl.textContent = "";
+
+    if (cepDigits.length !== 8) return;
+
+    // cache simples (evita request repetido se usuário sai/volta)
+    if (cepDigits === lastCep && lastData) {
+      applyData(lastData);
+      setValid();
+      return;
+    }
+
+    // cancela request anterior
+    if (controller) controller.abort();
+    controller = new AbortController();
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`, {
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+
+      if (!res.ok) throw new Error("Falha ao consultar CEP.");
+      const data = await res.json();
+      if (data.erro) throw new Error("CEP não encontrado.");
+
+      lastCep = cepDigits;
+      lastData = data;
+
+      applyData(data);
+      setValid();
+    } catch (err) {
+      if (err.name === "AbortError") return; // usuário continuou digitando
+      setInvalid(err.message || "CEP inválido.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // máscara + debounce
+  cepEl.addEventListener("input", () => {
+    cepEl.value = formatCep(cepEl.value);
+    clearTimeout(timer);
+    timer = setTimeout(lookup, 300);
+  });
+
+  // se colar/editar e sair
+  cepEl.addEventListener("blur", lookup);
+}
+
+// Auto-init: qualquer form com data-cep-autofill vira "componente"
+document.querySelectorAll("[data-cep-autofill]").forEach(initCepAutofill);
 
     // Toggle mostrar/ocultar senha (delegação funciona mesmo em modal)
   document.addEventListener('click', (e) => {
