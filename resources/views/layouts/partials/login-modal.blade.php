@@ -41,6 +41,148 @@
 </button>
 
 <style>
+  /* Descrição no mesmo padrão visual dos inputs */
+#registerProfileModal #regDescription{
+  width: 100%;
+  min-height: 120px;          /* altura “confortável” */
+  padding: 14px 16px;         /* parecido com input alto (55px) */
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.12);
+  background-color: #fff;
+
+  font: inherit;
+  color: inherit;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  resize: vertical;
+  box-shadow: none;
+  outline: 0;
+
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+/* Foco igual aos outros campos */
+#registerProfileModal #regDescription:focus{
+  border-color: var(--color-primary, #0d6efd);
+  box-shadow: 0 0 0 .18rem rgba(13,110,253,.15);
+}
+
+/* Placeholder mais “clean” */
+#registerProfileModal #regDescription::placeholder{
+  color: rgba(0,0,0,.45);
+}
+
+/* Validação (se você aplicar is-valid/is-invalid) */
+#registerProfileModal #regDescription.is-invalid{
+  border-color: #dc3545;
+}
+#registerProfileModal #regDescription.is-valid{
+  border-color: #198754;
+}
+
+/* Disabled (caso um dia você trave o campo) */
+#registerProfileModal #regDescription:disabled{
+  background-color: rgba(0,0,0,.03);
+  cursor: not-allowed;
+  opacity: .9;
+}
+   #registerProfileModal #regState{
+    width: 100%;
+    height: 55px;                 /* ajuste para bater com seus inputs */
+    padding: 0 46px 0 16px;       /* espaço para a setinha à direita */
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,.12);
+    background-color: #fff;
+
+    font: inherit;
+    color: inherit;
+
+    /* remove aparência nativa + a seta padrão do bootstrap */
+    appearance: none;
+    -webkit-appearance: none;
+
+    /* seta custom (leve) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 14px 14px;
+
+    box-shadow: none;
+  }
+
+  /* Foco no mesmo "feeling" de input */
+  #registerProfileModal #regState:focus{
+    outline: 0;
+    border-color: var(--color-primary, #0d6efd);
+    box-shadow: 0 0 0 .18rem rgba(13,110,253,.15);
+  }
+
+  /* Estados de validação (se você aplicar is-valid/is-invalid nele) */
+  #registerProfileModal #regState.is-invalid{
+    border-color: #dc3545;
+  }
+  #registerProfileModal #regState.is-valid{
+    border-color: #198754;
+  }
+
+  /* Quando seu CEP autofill desabilitar o select */
+  #registerProfileModal #regState:disabled{
+    background-color: rgba(0,0,0,.03);
+    cursor: not-allowed;
+    opacity: .9;
+  }
+   #termsModal .modal-content{
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+  }
+  #termsModal .modal-body{
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+  }
+  #registerProfileModal .modal-dialog{
+    margin: auto;
+  }
+
+  #registerProfileModal .container{
+    width: 100%;
+  }
+
+  #registerProfileModal .user-data-form.modal-content{
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* importantíssimo */
+  }
+
+  /* scroll aqui */
+  #registerProfileModal .form-wrapper{
+    flex: 1 1 auto;
+    min-height: 0;              /* IMPORTANTÍSSIMO para overflow funcionar em flex */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* textarea no mesmo padrão dos inputs do tema */
+  #registerProfileModal textarea{
+    width: 100%;
+    resize: vertical;
+  }
+
+  /* força aparecer invalid-feedback no seu tema dentro do input-wrapper */
+  #registerProfileModal .invalid-feedback{
+    display: none;
+    font-size: .875rem;
+    margin-top: .25rem;
+    color: #dc3545;
+  }
+  #registerProfileModal [data-cep-field="cep"].is-invalid ~ [data-cep-feedback]{
+    display: block !important;
+  }
+
   [data-cep-field="cep"].is-invalid ~ [data-cep-feedback] {
   display: block !important;
 }
@@ -89,136 +231,188 @@
   </div>
 </div>
 <!-- Modal 2ª etapa: Completar perfil no cadastro -->
-<div class="modal fade"
+<!-- Modal 2ª etapa: Completar perfil no cadastro (no MESMO visual do login/register) -->
+<div class="modal fade "
      id="registerProfileModal"
      tabindex="-1"
      aria-hidden="true"
      data-bs-backdrop="static"
      data-bs-keyboard="false">
 
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="container">
+      <div class="user-data-form modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title">Complete seu perfil</h5>
-        <!-- Se você quiser impedir fechar, remova este botão -->
+        <!-- fecha (você já controla via JS pra voltar pro login/register) -->
         <button type="button" class="btn-close" aria-label="Close" id="closeProfileModalBtn"></button>
+
+        <div class="form-wrapper m-auto">
+          <div class="text-center mb-20">
+            <h2>Complete seu perfil</h2>
+            <p>Para concluir o cadastro, complete todas as informações abaixo.</p>
+          </div>
+
+          <form id="registerProfileForm"
+                method="POST"
+                action="{{ route('registration.post') }}"
+                data-cep-autofill>
+            @csrf
+
+            <div class="row">
+
+              <div class="col-12 col-md-6">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>Nome*</label>
+                  <input type="text"
+                         name="name"
+                         id="regProfileName"
+                         placeholder="Nome completo"
+                         required>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>Telefone*</label>
+                  <input type="text"
+                         name="phone"
+                         placeholder="(00) 00000-0000"
+                         inputmode="tel"
+                         autocomplete="tel"
+                         data-mask="phoneBR"
+                         required>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>WhatsApp*</label>
+                  <input type="text"
+                         name="whatsapp"
+                         placeholder="(00) 00000-0000"
+                         inputmode="tel"
+                         autocomplete="tel"
+                         data-mask="phoneBR"
+                         required>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>CEP*</label>
+                  <input type="text"
+                         name="cep"
+                         placeholder="00000-000"
+                         inputmode="numeric"
+                         autocomplete="postal-code"
+                         data-cep-field="cep"
+                         required>
+                  <div class="invalid-feedback" data-cep-feedback>CEP inválido.</div>
+                  <div data-cep-status class="form-text"></div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>Estado*</label>
+                  @php
+                    $ufs = $ufs ?? [
+                      'AC'=>'Acre','AL'=>'Alagoas','AP'=>'Amapá','AM'=>'Amazonas','BA'=>'Bahia','CE'=>'Ceará','DF'=>'Distrito Federal',
+                      'ES'=>'Espírito Santo','GO'=>'Goiás','MA'=>'Maranhão','MT'=>'Mato Grosso','MS'=>'Mato Grosso do Sul','MG'=>'Minas Gerais',
+                      'PA'=>'Pará','PB'=>'Paraíba','PR'=>'Paraná','PE'=>'Pernambuco','PI'=>'Piauí','RJ'=>'Rio de Janeiro','RN'=>'Rio Grande do Norte',
+                      'RS'=>'Rio Grande do Sul','RO'=>'Rondônia','RR'=>'Roraima','SC'=>'Santa Catarina','SP'=>'São Paulo','SE'=>'Sergipe','TO'=>'Tocantins'
+                    ];
+                  @endphp
+                  <select name="state"
+                          id="regState"
+                          class="form-select"
+                          data-cep-field="state"
+                          required>
+                    <option value="">Selecione</option>
+                    @foreach($ufs as $uf => $label)
+                      <option value="{{ $uf }}">{{ $label }} ({{ $uf }})</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>Cidade*</label>
+                  <input type="text"
+                         name="city"
+                         placeholder="Ex.: Campinas"
+                         data-cep-field="city"
+                         required>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="input-wrapper position-relative mb-25">
+                  <label>Endereço*</label>
+                  <input type="text"
+                         name="address"
+                         placeholder="Rua, número, bairro"
+                         data-cep-field="address"
+                         required>
+                </div>
+              </div>
+
+                <div class="col-12">
+              <div class="input-wrapper position-relative mb-25">
+                <label>Descrição*</label>
+                <textarea
+                  name="description"
+                    id="regDescription"
+                  rows="4"
+                  placeholder="Fale um pouco sobre você, seus serviços e sua experiência..."
+                  required></textarea>
+              </div>
+            </div>
+              
+
+              <div class="col-12">
+                <div class="input-wrapper position-relative mb-10">
+                  <label>Especialidades*</label>
+                  <small class="text-muted d-block mb-2">
+                    Dica: segure Ctrl (Windows) / Cmd (Mac) para selecionar várias.
+                  </small>
+
+                  <select name="specialties[]"
+                          class="form-select"
+                          multiple
+                          required
+                          style="min-height: 180px;">
+                    @foreach(($specialties ?? []) as $spec)
+                      <option value="{{ $spec->id }}">{{ $spec->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <button type="submit" class="ht-btn w-100 d-block mt-20">
+                  Concluir cadastro
+                </button>
+
+             
+              </div>
+
+            </div>
+          </form>
+
+          <div id="regProfileMsg" class="mt-3"></div>
+        </div>
       </div>
-
-      <div class="modal-body">
-        <p class="text-muted mb-3">
-          Para concluir o cadastro, complete todas as informações abaixo.
-        </p>
-
-      <form id="registerProfileForm" method="POST" action="{{ route('registration.post') }}" data-cep-autofill>
-        @csrf
-
-          <div class="row g-3">
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Nome*</label>
-              <input type="text" name="name" id="regProfileName" class="form-control" required>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Telefone*</label>
-               <input
-                type="text"
-                name="phone"
-                class="form-control"
-                required
-                inputmode="tel"
-                autocomplete="tel"
-                placeholder="(00) 00000-0000"
-                data-mask="phoneBR"
-                required
-              >
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">WhatsApp*</label>
-              <input type="text"
-              name="whatsapp"
-              class="form-control"
-              required
-              inputmode="tel"
-              autocomplete="tel"
-              placeholder="(00) 00000-0000"
-              data-mask="phoneBR" required>
-            </div>
-
-             <div class="col-12 col-md-6">
-              <label class="form-label">CEP*</label>
-              <input type="text" name="cep" class="form-control" required data-cep-field="cep" placeholder="00000-000">
-              <div class="invalid-feedback" data-cep-feedback>CEP inválido.</div>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Estado*</label>
-              @php
-                $ufs = [
-                  'AC'=>'Acre','AL'=>'Alagoas','AP'=>'Amapá','AM'=>'Amazonas','BA'=>'Bahia','CE'=>'Ceará','DF'=>'Distrito Federal',
-                  'ES'=>'Espírito Santo','GO'=>'Goiás','MA'=>'Maranhão','MT'=>'Mato Grosso','MS'=>'Mato Grosso do Sul','MG'=>'Minas Gerais',
-                  'PA'=>'Pará','PB'=>'Paraíba','PR'=>'Paraná','PE'=>'Pernambuco','PI'=>'Piauí','RJ'=>'Rio de Janeiro','RN'=>'Rio Grande do Norte',
-                  'RS'=>'Rio Grande do Sul','RO'=>'Rondônia','RR'=>'Roraima','SC'=>'Santa Catarina','SP'=>'São Paulo','SE'=>'Sergipe','TO'=>'Tocantins'
-                ];
-              @endphp
-              <select name="state" id="regState" class="form-select" required data-cep-field="state">
-                <option value="">Selecione</option>
-                @foreach($ufs as $uf => $label)
-                  <option value="{{ $uf }}">{{ $label }} ({{ $uf }})</option>
-                @endforeach
-              </select>
-            </div>
-
-           <div class="col-12 col-md-6">
-            <label class="form-label">Cidade*</label>
-            <input type="text" name="city" class="form-control" required data-cep-field="city">
-          </div>
-
-            <div class="col-12">
-            <label class="form-label">Endereço*</label>
-            <input type="text" name="address" class="form-control" required data-cep-field="address">
-          </div>
-
-            <div class="col-12">
-              <label class="form-label">Descrição*</label>
-              <textarea name="description" class="form-control" rows="4" required></textarea>
-            </div>
-
-         
-            <div class="col-12">
-              <label class="form-label">Especialidades*</label>
-              <br>
-              <small class="text-muted">Dica: segure Ctrl (Windows) / Cmd (Mac) para selecionar várias.</small>
-              <select name="specialties[]" class="form-select" multiple required style="min-height: 180px;">
-                @foreach(($specialties ?? []) as $spec)
-                  <option value="{{ $spec->id }}">{{ $spec->name }}</option>
-                @endforeach
-              </select>
-            </div>
-
-            <div class="col-12 d-flex gap-2 justify-content-end mt-2">
-          
-              <button type="submit" class="ht-btn">
-                Concluir cadastro
-              </button>
-            </div>
-
-          </div>
-        </form>
-
-        <div id="regProfileMsg" class="mt-3"></div>
-      </div>
-
     </div>
   </div>
 </div>
 
+
 <!-- Modal: Solicitar código de verificação de e-mail -->
 <div class="modal fade" id="verifyEmailRequestModal" tabindex="-1" aria-labelledby="verifyEmailRequestLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="user-data-form modal-content">
+  <div  class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="user-data-form modal-content user-data-form modal modal-dialog-scrollable">
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
       <div class="form-wrapper m-auto">

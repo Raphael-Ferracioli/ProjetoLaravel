@@ -764,6 +764,57 @@ function initCepAutofill(formEl) {
   }
 }
 </script>
+<script>
+/** ========= Máscaras (BR) ========= */
+function formatPhoneBR(value) {
+  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
+  if (!digits) return "";
+
+  const ddd = digits.slice(0, 2);
+  const rest = digits.slice(2);
+
+  // 11 dígitos = celular (9xxxx-xxxx), 10 = fixo (xxxx-xxxx)
+  const isMobile = digits.length > 10;
+  const part1Len = isMobile ? 5 : 4;
+
+  const p1 = rest.slice(0, part1Len);
+  const p2 = rest.slice(part1Len, part1Len + 4);
+
+  let out = "";
+  if (ddd.length) out += `(${ddd}`;
+  if (ddd.length === 2) out += ") ";
+  if (p1.length) out += p1;
+  if (p2.length) out += `-${p2}`;
+
+  return out;
+}
+
+function bindPhoneMask(input) {
+  if (!input || input.dataset.maskBound === "1") return;
+  input.dataset.maskBound = "1";
+
+  const apply = () => {
+    input.value = formatPhoneBR(input.value);
+  };
+
+  input.addEventListener("input", apply);
+  input.addEventListener("blur", apply);
+
+  // aplica já na carga (caso venha preenchido)
+  apply();
+}
+
+function initInputMasks(container = document) {
+  container
+    .querySelectorAll('input[data-mask="phoneBR"]')
+    .forEach(bindPhoneMask);
+}
+
+// init geral
+document.addEventListener("DOMContentLoaded", () => {
+  initInputMasks(document);
+});
+</script>
 
 <script>
 
@@ -825,35 +876,41 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-   if (field === 'phone') {
-        title.textContent = 'Editar telefone';
-        return `
-          <label class="form-label">Telefone*</label>
-          <input
-            type="text"
-            class="form-control"
-            name="value"
-            data-mask="phoneBR"
-            value="${value.replace(/"/g,'&quot;')}"
-            required
-          >
-        `;
-      }
+  if (field === 'phone') {
+  title.textContent = 'Editar telefone';
+  return `
+    <label class="form-label">Telefone*</label>
+    <input
+      type="text"
+      class="form-control"
+      name="value"
+      data-mask="phoneBR"
+      inputmode="tel"
+      autocomplete="tel"
+      placeholder="(00) 00000-0000"
+      value="${value.replace(/"/g,'&quot;')}"
+      required
+    >
+  `;
+}
 
-        if (field === 'whatsapp') {
-      title.textContent = 'Editar WhatsApp';
-      return `
-        <label class="form-label">WhatsApp*</label>
-        <input
-          type="text"
-          class="form-control"
-          name="value"
-          data-mask="phoneBR"
-          value="${value.replace(/"/g,'&quot;')}"
-          required
-        >
-      `;
-    }
+if (field === 'whatsapp') {
+  title.textContent = 'Editar WhatsApp';
+  return `
+    <label class="form-label">WhatsApp*</label>
+    <input
+      type="text"
+      class="form-control"
+      name="value"
+      data-mask="phoneBR"
+      inputmode="tel"
+      autocomplete="tel"
+      placeholder="(00) 00000-0000"
+      value="${value.replace(/"/g,'&quot;')}"
+      required
+    >
+  `;
+}
 
     if (field === 'facebook' || field === 'instagram' || field === 'linkedin') {
       title.textContent = 'Editar ' + field;
@@ -998,7 +1055,7 @@ body.innerHTML = `
     ${templateFor(currentField, el)}
   </form>
 `;
-
+initInputMasks(modalEl);
 modal.show();
 
 // se for localização, aplica o CEP component AGORA (porque o HTML nasceu agora)
