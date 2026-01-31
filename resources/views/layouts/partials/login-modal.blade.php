@@ -561,11 +561,11 @@
                                <button type="button" class="btn btn-link p-0" id="openForgotBtn">
                                   Esqueceu a senha?
                                 </button>
-                                    <div class="col-12 text-start mb-2">
+                                    {{-- <div class="col-12 text-start mb-2">
                                 <button type="button" class="btn btn-link p-0" id="openVerifyEmailBtn">
                                   Verificar e-mail / Liberar acesso
                                 </button>
-                                  </div>
+                                  </div> --}}
                                     </div>
 
                                     <div class="col-12">
